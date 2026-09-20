@@ -5,7 +5,7 @@ import math
 # Create the main window
 root = tk.Tk()
 root.title("Tic-Tac-Toe AI")
-root.geometry("420x520")
+root.geometry("500x700")
 root.resizable(False, False)
 
 # Game variables
