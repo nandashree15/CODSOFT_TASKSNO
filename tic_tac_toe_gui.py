@@ -13,6 +13,8 @@ board = [""] * 9
 human = "X"
 ai = "O"
 game_over = False
+game_mode = "single"
+current_player = "X"
 
 # Winning combinations
 winning_combinations = [
@@ -78,6 +80,9 @@ def minimax(is_maximizing):
 
 # Find the best move for AI
 def ai_move():
+    if mode_var.get() != "single":
+        return
+
     best_score = -math.inf
     best_move = None
 
@@ -96,14 +101,30 @@ def ai_move():
         buttons[best_move].config(text=ai)
         check_game_end()
 
-
 # Handle player's move
 def player_move(index):
-    global game_over
+    global game_over, current_player
 
     if game_over or board[index] != "":
         return
 
+    # Two-player mode
+    if mode_var.get() == "two":
+        board[index] = current_player
+        buttons[index].config(text=current_player)
+
+        if check_game_end():
+            return
+
+        if current_player == "X":
+            current_player = "O"
+        else:
+            current_player = "X"
+
+        status_label.config(text=f"{current_player}'s turn")
+        return
+
+    # Single-player mode
     board[index] = human
     buttons[index].config(text=human)
 
@@ -146,10 +167,11 @@ def check_game_end():
 
 # Start a new game
 def new_game():
-    global board, game_over
+    global board, game_over, current_player
 
     board = [""] * 9
     game_over = False
+    current_player = "X"
 
     for button in buttons:
         button.config(text="")
@@ -164,6 +186,34 @@ title_label = tk.Label(
     font=("Arial", 28, "bold")
 )
 title_label.pack(pady=15)
+# Game mode selection
+mode_frame = tk.Frame(root)
+mode_frame.pack(pady=5)
+
+mode_label = tk.Label(
+    mode_frame,
+    text="Game Mode:",
+    font=("Arial", 12, "bold")
+)
+mode_label.pack()
+
+mode_var = tk.StringVar(value="single")
+
+single_radio = tk.Radiobutton(
+    mode_frame,
+    text="Single Player (vs AI)",
+    variable=mode_var,
+    value="single"
+)
+single_radio.pack()
+
+two_radio = tk.Radiobutton(
+    mode_frame,
+    text="Two Players",
+    variable=mode_var,
+    value="two"
+)
+two_radio.pack()
 
 
 # Status
