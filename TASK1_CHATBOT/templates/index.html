@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>AI Learning Chatbot</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    <div class="chatbot-container">
+
+        <header class="chat-header">
+            <div class="bot-icon">🤖</div>
+
+            <div>
+                <h1>AI Learning Chatbot</h1>
+                <p>Rule-Based Educational Assistant</p>
+            </div>
+
+            <div class="status">
+                <span></span> Online
+            </div>
+        </header>
+
+        <div class="chat-area">
+
+            <aside class="sidebar">
+
+                <h2>💡 Topics</h2>
+
+                <button onclick="sendSuggestion('What is Artificial Intelligence?')">
+                    Artificial Intelligence
+                </button>
+
+                <button onclick="sendSuggestion('What is Machine Learning?')">
+                    Machine Learning
+                </button>
+
+                <button onclick="sendSuggestion('What is Deep Learning?')">
+                    Deep Learning
+                </button>
+
+                <button onclick="sendSuggestion('What is Python?')">
+                    Python
+                </button>
+
+                <button onclick="sendSuggestion('What is a database?')">
+                    Database
+                </button>
+
+                <button onclick="sendSuggestion('What is an algorithm?')">
+                    Algorithms
+                </button>
+
+                <div class="sidebar-bottom">
+                    <p>💬 Ask me about</p>
+                    <p>AI • ML • DL • Python</p>
+                    <p>Computer Science</p>
+                </div>
+
+            </aside>
+
+            <main class="chat-content">
+
+                <div id="chat-box">
+
+                    <div class="message bot-message">
+
+                        <div class="avatar">🤖</div>
+
+                        <div class="message-content">
+                            <span class="sender">Chatbot</span>
+
+                            <p>
+                                Hello! 👋 I'm your AI Learning Chatbot.
+                                I can answer questions about Artificial Intelligence,
+                                Machine Learning, Deep Learning, Python, and Computer Science.
+                            </p>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="input-area">
+
+                    <input
+                        type="text"
+                        id="user-input"
+                        placeholder="Ask me something about AI, Python, ML..."
+                        autocomplete="off"
+                    >
+
+                    <button id="send-button" onclick="sendMessage()">
+                        ➤
+                    </button>
+
+                </div>
+
+            </main>
+
+        </div>
+
+    </div>
+
+<script>
+
+const input = document.getElementById("user-input");
+const chatBox = document.getElementById("chat-box");
+
+function addMessage(message, sender) {
+
+    const messageDiv = document.createElement("div");
+
+    if (sender === "user") {
+
+        messageDiv.className = "message user-message";
+
+        messageDiv.innerHTML = `
+            <div class="message-content">
+                <span class="sender">You</span>
+                <p>${message}</p>
+            </div>
+
+            <div class="avatar">👤</div>
+        `;
+
+    } else {
+
+        messageDiv.className = "message bot-message";
+
+        messageDiv.innerHTML = `
+            <div class="avatar">🤖</div>
+
+            <div class="message-content">
+                <span class="sender">Chatbot</span>
+                <p>${message}</p>
+            </div>
+        `;
+    }
+
+    chatBox.appendChild(messageDiv);
+
+    chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+function sendMessage() {
+
+    const message = input.value.trim();
+
+    if (message === "") {
+        return;
+    }
+
+    addMessage(message, "user");
+
+    input.value = "";
+
+    fetch("/chat", {
+
+        method: "POST",
+
+        headers: {
+            "Content-Type": "application/json"
+        },
+
+        body: JSON.stringify({
+            message: message
+        })
+
+    })
+
+    .then(response => response.json())
+
+    .then(data => {
+
+        setTimeout(() => {
+            addMessage(data.response, "bot");
+        }, 300);
+
+    })
+
+    .catch(error => {
+
+        addMessage(
+            "Sorry, something went wrong. Please try again.",
+            "bot"
+        );
+
+        console.error(error);
+    });
+}
+
+function sendSuggestion(question) {
+
+    input.value = question;
+
+    sendMessage();
+}
+
+input.addEventListener("keypress", function(event) {
+
+    if (event.key === "Enter") {
+        sendMessage();
+    }
+
+});
+
+</script>
+
+</body>
+</html>
