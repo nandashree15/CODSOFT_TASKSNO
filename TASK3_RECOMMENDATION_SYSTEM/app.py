@@ -413,7 +413,7 @@ TMDB_SEARCH_URL = "https://api.themoviedb.org/3/search/movie"
 @st.cache_data
 def load_data():
 
-  movies = pd.read_csv("movies.csv")
+ movies = pd.read_csv("data/movies.csv")
 
     required_columns = [
         "title",
